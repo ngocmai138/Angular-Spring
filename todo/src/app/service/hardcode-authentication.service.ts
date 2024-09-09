@@ -7,10 +7,9 @@ export class HardcodeAuthenticationService {
 
   constructor() { }
   authenticate(username:String, password:String){
-    console.log('before '+this.isLoggedIn());
     if(username === 'mai' && password === 'mai'){
+      if (typeof sessionStorage !== 'undefined')
       sessionStorage.setItem("authenticaterUser",  username.toString());
-      console.log('after '+this.isLoggedIn());
       return true;
     }else{
       return false;
@@ -18,11 +17,14 @@ export class HardcodeAuthenticationService {
   }
 
   isLoggedIn(){
-    let user = sessionStorage.getItem("authenticaterUser");
+    let user;
+    if (typeof sessionStorage !== 'undefined')
+    user = sessionStorage.getItem("authenticaterUser");
     return !(user===null);
   }
 
   logout(){
+    if (typeof sessionStorage !== 'undefined')
     sessionStorage.removeItem("authenticaterUser");
   }
 }
