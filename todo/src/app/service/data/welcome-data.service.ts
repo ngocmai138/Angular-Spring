@@ -1,5 +1,6 @@
-import { Injectable } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
+import {Injectable} from '@angular/core';
+import {HttpClient, HttpHeaders} from "@angular/common/http";
+import {API_URL} from "../../app.constants";
 
 export class HelloWorldBean{
   constructor(public message:String) {
@@ -10,16 +11,10 @@ export class HelloWorldBean{
   providedIn: 'root'
 })
 
-
 export class WelcomeDataService {
 
   constructor(private http:HttpClient) { }
-  executeHelloWorldBeanService(){
-    // return this.http.get<HelloWorldBean>("http://localhost:8080/hello-error");
-    return this.http.get<HelloWorldBean>("http://localhost:8080/hello-bean");
-  }
   executeHelloWorldBeanServiceWithPathParameter(name:any){
-    return this.http.get(`http://localhost:8080/hello-variable-path/${name}`);
+    return this.http.get(`${API_URL}hello-variable-path/${name}`);
   }
-
 }

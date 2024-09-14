@@ -2,3 +2,7 @@
 <div>Welcome and hello <i>{{username}}</i> to our amazing Application. Manage your list
 <a routerLink="/todos">here</a>
 </div>
+<div>
+  Get welcome message from server <button class="btn btn-success" (click)="GetMessage()">Get message</button><br>
+  Your message: <h3>{{message}}</h3>
+</div>

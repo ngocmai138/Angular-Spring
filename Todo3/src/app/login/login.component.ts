@@ -3,6 +3,7 @@ import {FormsModule} from '@angular/forms';
 import {Router} from '@angular/router';
 import {HardcoreAuthenticationService} from "../service/hardcore-authentication.service";
 import {NgIf} from "@angular/common";
+import {BasicAuthenticationService} from "../service/basic-authentication.service";
 
 @Component({
   selector: 'app-login',
@@ -12,16 +13,23 @@ import {NgIf} from "@angular/common";
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  username='mai'
+  username=''
   password=''
   invalidLogin=false;
   errorMessage='Invalid Credential';
   constructor(public router: Router,
-              public hardcoreAuthenticationService:HardcoreAuthenticationService) {
+              public basicAuthenticationService:BasicAuthenticationService) {
   }
-  handleClick() {
-    console.log(this.invalidLogin)
-    this.invalidLogin = !this.hardcoreAuthenticationService.authenticate(this.username, this.password);
+  basicAuthenHandleClick(){
+    this.basicAuthenticationService.authenticateUser(this.username, this.password).subscribe({
+      next:()=>{
+        this.router.navigate(['welcome',this.username]);
+      },
+      error:(err)=>{
+        this.invalidLogin = true;
+        console.error(err)
+      }
+    })
   }
 
 }

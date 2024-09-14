@@ -1,8 +1,8 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgIf} from "@angular/common";
 import {Router} from "@angular/router";
-import {HardcoreAuthenticationService} from "../service/hardcore-authentication.service";
+import {BasicAuthenticateService} from "../service/data/basic-authenticate.service";
 
 @Component({
   selector: 'app-login',
@@ -15,14 +15,23 @@ import {HardcoreAuthenticationService} from "../service/hardcore-authentication.
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  username='mai'
-  password=''
-  errorMessage='Invalid Credentials'
+  username = 'mai'
+  password = ''
+  errorMessage = 'Invalid Credentials'
   invalidLogin = false;
-  constructor(public router:Router,
-              public hardcoreAuthenticationService:HardcoreAuthenticationService) {
+
+  constructor(public router: Router,
+              public basicAuthenticateService: BasicAuthenticateService) {
   }
-  handleLogin(username:String, password:String){
-    this.invalidLogin=this.hardcoreAuthenticationService.authenticate(username, password);
+
+  handleLogin(username: String, password: String) {
+    this.basicAuthenticateService.authenticateUser(username, password).subscribe({
+        next: () => {
+          this.invalidLogin = false;
+          this.router.navigate(['welcome',username])
+        },
+        error: () => this.invalidLogin = true
+      }
+    )
   }
 }

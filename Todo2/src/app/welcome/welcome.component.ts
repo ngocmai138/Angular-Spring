@@ -26,6 +26,11 @@ export class WelcomeComponent implements OnInit{
       response => this.handleSuccessResponse(response)
     );
   }
+  getHelloWorldMessageWithParam() {
+    this.service.getHelloWorldResponseWithParam(this.username).subscribe(
+      response => this.handleSuccessResponse(response)
+    );
+  }
   handleSuccessResponse(response:any){
     this.message = response.message
   }

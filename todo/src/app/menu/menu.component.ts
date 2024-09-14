@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {NgIf} from "@angular/common";
-import {HardcodeAuthenticationService} from "../service/hardcode-authentication.service";
+import {BasicAuthenticationService} from "../service/http/basic-authentication.service";
+import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
 
 @Component({
   selector: 'app-menu',
@@ -12,6 +13,7 @@ import {HardcodeAuthenticationService} from "../service/hardcode-authentication.
 })
 export class MenuComponent {
   protected readonly NgIf = NgIf;
-  constructor(public hardcodeAuthenticationService:HardcodeAuthenticationService) {
+  constructor(public basicAuthenticationService:BasicAuthenticationService,
+              public jwtAuthenticationSeriveService:JwtAuthenticationSeriveService) {
   }
 }

@@ -7,6 +7,8 @@
         <th>Description</th>
         <th>is Done?</th>
         <th>Expect date</th>
+        <th>Action</th>
+        <th></th>
       </tr>
     </thead>
     <tbody>
@@ -14,8 +16,15 @@
         <td>{{todo.id}}</td>
         <td>{{todo.description}}</td>
         <td>{{todo.done}}</td>
-        <td>{{todo.expectDate | date | uppercase}}</td>
+        <td>{{todo.targetDate | date | uppercase}}</td>
+        <td>
+          <button class="btn btn-success" (click)="updateTodo(todo)">Update</button>
+        </td>
+        <td>
+          <button class="btn btn-warning" (click)="removeTodo(todo)">Remove</button>
+        </td>
       </tr>
     </tbody>
   </table>
+  <button class="btn btn-success" (click)="addNewTodo()">Add new</button>
 </div>
