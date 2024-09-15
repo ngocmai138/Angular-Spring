@@ -2,7 +2,8 @@ import {Component} from '@angular/core';
 import {FormsModule} from "@angular/forms";
 import {NgIf} from "@angular/common";
 import {Router} from "@angular/router";
-import {BasicAuthenticateService} from "../service/data/basic-authenticate.service";
+import {BasicAuthenticateService} from "../service/http/basic-authenticate.service";
+import {JwtAuthenticateService} from "../service/http/jwt-authenticate.service";
 
 @Component({
   selector: 'app-login',
@@ -21,11 +22,22 @@ export class LoginComponent {
   invalidLogin = false;
 
   constructor(public router: Router,
-              public basicAuthenticateService: BasicAuthenticateService) {
+              public basicAuthenticateService: BasicAuthenticateService,
+              public jwtAuthenticateService:JwtAuthenticateService) {
   }
 
   handleLogin(username: String, password: String) {
     this.basicAuthenticateService.authenticateUser(username, password).subscribe({
+        next: () => {
+          this.invalidLogin = false;
+          this.router.navigate(['welcome',username])
+        },
+        error: () => this.invalidLogin = true
+      }
+    )
+  }
+  handleJwtLogin(username: String, password: String) {
+    this.jwtAuthenticateService.authenticateUser(username, password).subscribe({
         next: () => {
           this.invalidLogin = false;
           this.router.navigate(['welcome',username])

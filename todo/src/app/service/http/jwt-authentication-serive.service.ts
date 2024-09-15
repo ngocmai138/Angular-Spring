@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {API_URL} from "../../app.constants";
 import {map} from "rxjs";
@@ -11,8 +11,8 @@ export class JwtAuthenticationSeriveService {
   constructor(private http: HttpClient) {
   }
 
-  executeJwtAuthenticationService(username:any, password: any) {
-    return this.http.post<any>(`${API_URL}authenticate`,{ username, password})
+  executeJwtAuthenticationService(username: any, password: any) {
+    return this.http.post<any>(`${API_URL}authenticate`, {username, password})
       .pipe(
         map(
           data => {
@@ -25,18 +25,22 @@ export class JwtAuthenticationSeriveService {
   }
 
   getAuthenticatedUser() {
-    return sessionStorage.getItem(AUTHENTICATED_USER)
+    if (typeof sessionStorage !== 'undefined')
+      return sessionStorage.getItem(AUTHENTICATED_USER);
+    return null;
   }
 
   getAuthenticatedToken() {
-    return sessionStorage.getItem(TOKEN)
+    if (typeof sessionStorage !== 'undefined')
+      return sessionStorage.getItem(TOKEN);
+    return null;
   }
 
   isLoginIn() {
     let user;
     if (typeof sessionStorage !== 'undefined')
       user = sessionStorage.getItem(AUTHENTICATED_USER);
-    return !(user===null);
+    return !(user === null);
   }
 
   logout() {

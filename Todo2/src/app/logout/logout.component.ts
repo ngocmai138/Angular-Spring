@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
-import {HardcoreAuthenticationService} from "../service/hardcore-authentication.service";
-import {BasicAuthenticateService} from "../service/data/basic-authenticate.service";
+import {HardcoreAuthenticationService} from "../service/http/hardcore-authentication.service";
+import {BasicAuthenticateService} from "../service/http/basic-authenticate.service";
 
 @Component({
   selector: 'app-logout',
