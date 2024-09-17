@@ -5,6 +5,7 @@ import {Router} from "@angular/router";
 import {HardcodeAuthenticationService} from "../service/http/hardcode-authentication.service";
 import {BasicAuthenticationService} from "../service/http/basic-authentication.service";
 import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
+import {API_URL} from "../app.constants";
 
 @Component({
   selector: 'app-login',
@@ -61,4 +62,22 @@ export class LoginComponent {
         }
       );
   }
+
+  loginWithGoogle() {
+    window.location.href = `${API_URL}login`;
+    // console.log("Start login")
+    // this.jwtAuthenticationSeriveService.loginWithGoogle().subscribe(
+    //   {
+    //     next:()=>{
+    //       this.invalidLogin=false;
+    //       this.router.navigate(['welcome', this.username]);
+    //     },
+    //     error:()=>{
+    //       this.invalidLogin=true
+    //     }
+    //   }
+    // )
+    // console.log("End")
+  }
+
 }

@@ -1,9 +1,6 @@
 package com.example.restful_web_service.todo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Date;
 @Entity
@@ -11,17 +8,19 @@ public class Todo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    private String username;
+    @ManyToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE,CascadeType.DETACH,CascadeType.REFRESH})
+    @JoinColumn(name = "user_id")
+    private User user;
     private String description;
     private boolean done;
     private Date targetDate;
+    private Date modifiedDate;
 
     public Todo() {
     }
 
-    public Todo(long id, String username, String description, boolean done, Date targetDate) {
+    public Todo(long id, String description, boolean done, Date targetDate) {
         this.id = id;
-        this.username = username;
         this.description = description;
         this.done = done;
         this.targetDate = targetDate;
@@ -31,11 +30,22 @@ public class Todo {
     public String toString() {
         return "Todo{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", user=" + user +
                 ", description='" + description + '\'' +
-                ", completed=" + done +
-                ", expectDate=" + targetDate +
+                ", done=" + done +
+                ", targetDate=" + targetDate +
+                ", modifiedDate=" + modifiedDate +
                 '}';
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        modifiedDate = new Date();
+    }
+
+    @PrePersist
+    protected void onPrePersist() {
+        modifiedDate = new Date();
     }
 
     public long getId() {
@@ -46,12 +56,12 @@ public class Todo {
         this.id = id;
     }
 
-    public String getUsername() {
-        return username;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public String getDescription() {
@@ -76,5 +86,13 @@ public class Todo {
 
     public void setTargetDate(Date targetDate) {
         this.targetDate = targetDate;
+    }
+
+    public Date getModifiedDate() {
+        return modifiedDate;
+    }
+
+    public void setModifiedDate(Date modifiedDate) {
+        this.modifiedDate = modifiedDate;
     }
 }

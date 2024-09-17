@@ -2,7 +2,7 @@
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
     <a class="navbar-brand" routerLink="">Mai Todos</a>
     <ul class="navbar-nav">
-      <li><a *ngIf="jwtAuthenticationSeriveService.isLoginIn()" class="nav-link" routerLink="/welcome/mai">Home</a></li>
+      <li><a *ngIf="jwtAuthenticationSeriveService.isLoginIn()" class="nav-link" routerLink="/welcome/{{username}}">Home</a></li>
       <li><a *ngIf="jwtAuthenticationSeriveService.isLoginIn()" class="nav-link" routerLink="/todos">Todos</a></li>
     </ul>
     <ul class="navbar-nav navbar-collapse justify-content-end">

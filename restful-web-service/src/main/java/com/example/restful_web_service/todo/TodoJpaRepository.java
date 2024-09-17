@@ -7,5 +7,6 @@ import java.util.*;
 
 @Repository
 public interface TodoJpaRepository extends JpaRepository<Todo, Long> {
-    List<Todo> findByUsername(String username);
+    List<Todo> findByUser(User user);
+    List<Todo> findByUserOrderByModifiedDateDesc(User user);
 }

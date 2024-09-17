@@ -4,6 +4,7 @@
   Username: <input type="text" name="username" [(ngModel)]="username" >
   Password: <input type="password" name="password" [(ngModel)]="password">
   <button (click)="handleJwtAuthLogin()" class="btn btn-success">Login</button>
-  username: <label>{{username}}</label>
-  password: <label>{{password}}</label>
+</div>
+<div>
+  <button class="btn btn-success" (click)="loginWithGoogle()">Login with Google</button>
 </div>

@@ -5,16 +5,11 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
-@Service
+//@Service
 public class TodoHardCodeService {
     public static List<Todo> todos = new ArrayList<>();
     public static long counter = 0;
 
-    static {
-        todos.add(new Todo(++counter, "mai", "Learn Angular", false, new Date()));
-        todos.add(new Todo(++counter, "mai", "Learn IELTS 6.0", false, new Date()));
-        todos.add(new Todo(++counter, "mai", "Become senior fullstack Java Developer", false, new Date()));
-    }
 
     public List<Todo> getAll(String username) {
         return todos;

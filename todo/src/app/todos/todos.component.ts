@@ -2,17 +2,19 @@ import {Component, OnInit} from '@angular/core';
 import {NgIf, NgFor, UpperCasePipe, DatePipe} from "@angular/common";
 import {TodoDataService} from "../service/data/todo-data.service";
 import {response} from "express";
-import {Router} from "@angular/router";
+import {ActivatedRoute, Router} from "@angular/router";
+import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
 
-export class Todo{
+export class Todo {
   constructor(
-    public id:number,
-    public description:String,
-    public done:boolean,
+    public id: number,
+    public description: String,
+    public done: boolean,
     public targetDate: Date
   ) {
   }
 }
+
 @Component({
   selector: 'app-todos',
   standalone: true,
@@ -20,46 +22,71 @@ export class Todo{
   templateUrl: './todos.component.html',
   styleUrl: './todos.component.css'
 })
-export class TodosComponent implements OnInit{
+export class TodosComponent implements OnInit {
 
-  todos? : Todo[]
-  message?:String
-  constructor(private todoService:TodoDataService,
-              private router:Router) {
+  todos?: Todo[]
+  messageSuccess?: String
+  messageFail?:String
+  username?: any
+
+  constructor(private todoService: TodoDataService,
+              private router: Router,
+              private route: ActivatedRoute,
+              private jwtAuthenticationSeriveService: JwtAuthenticationSeriveService) {
   }
 
   ngOnInit(): void {
-    this.refreshTodos()
+    this.username = this.jwtAuthenticationSeriveService.getAuthenticatedUser()?.toString();
+    this.route.queryParams.subscribe(
+      {
+        next:(param)=>{ this.messageSuccess= param['messageSuccess']
+        },
+        error:(param)=>{this.messageFail=param['messageFail']}
+      }
+    );
+    this.refreshTodos();
   }
 
-  refreshTodos(){
-    this.todoService.executeTodoService('mai').subscribe(
+  refreshTodos() {
+    this.todoService.executeTodoService(this.username).subscribe(
       response => {
         this.todos = response;
       }
     );
 
   }
-  // todos = [
-  //   new Todo(1, 'Learn to dance',false,new Date()),
-  //   new Todo(2, 'Become an Expert at Angular', false, new Date()),
-  //   new Todo(3, 'Visit India', false, new Date())
-  // ]
+
+  clearMessage(){
+    this.messageSuccess=''
+    this.messageFail=''
+  }
+
   deleteTodoById(id: number) {
-    this.todoService.deleteTodoService('mai', id).subscribe(
-      response =>{
-        console.log(`deleted ${id}`);
-        this.refreshTodos();
-        this.message=`Delete of ${id} successful!!!`;
-      }
-    );
+    const confirmation = window.confirm(`Are you sure to delete ${id} ?`);
+    if (confirmation) {
+      this.clearMessage();
+      this.todoService.deleteTodoService(this.username, id).subscribe(
+        {
+          next: () => {
+            this.refreshTodos();
+            this.messageSuccess = `Delete of ${id} successful!!!`;
+          },
+          error: () => {
+            this.messageFail = `Delete of ${id} failed`;
+            this.refreshTodos();
+          }
+        }
+      );
+    }
   }
 
   updateTodo(id: number) {
-    this.router.navigate(['todo',id])
+    this.clearMessage()
+    this.router.navigate(['todo', id])
   }
 
   addTodo() {
-    this.router.navigate(['todo',-1])
+    this.clearMessage()
+    this.router.navigate(['todo', -1])
   }
 }

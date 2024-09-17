@@ -4,11 +4,18 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
+import com.example.restful_web_service.todo.Authority;
+import com.example.restful_web_service.todo.UserRepository;
+import jakarta.annotation.PostConstruct;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
@@ -18,17 +25,23 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
+import com.example.restful_web_service.todo.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtEncoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -40,8 +53,10 @@ import com.nimbusds.jose.proc.SecurityContext;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity()
 public class JwtSecurityConfig {
+    @Autowired
+    private UserRepository userRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, HandlerMappingIntrospector introspector) throws Exception {
@@ -58,13 +73,19 @@ public class JwtSecurityConfig {
                         .authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.
-                        sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                        sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt(withDefaults()))
+                .oauth2Login(Customizer.withDefaults())
                 .httpBasic(
                         Customizer.withDefaults())
-                .headers(headers -> headers.frameOptions(frameOptionsConfig-> frameOptionsConfig.disable()))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .build();
+    }
+
+    @Bean
+    public AuthenticationSuccessHandler successHandler(){
+        return new SimpleUrlAuthenticationSuccessHandler("/oauth2/authorization/google");
     }
 
     @Bean
@@ -75,16 +96,50 @@ public class JwtSecurityConfig {
         return new ProviderManager(authenticationProvider);
     }
 
+//    @Bean
+//    public UserDetailsService userDetailsService() {
+//        UserDetails user = User.withUsername("mai")
+//                .password("{noop}mai")
+//                .authorities("read")
+//                .roles("USER")
+//                .build();
+//
+//        return new InMemoryUserDetailsManager(user);
+//    }
+    @PostConstruct
+    public void createDefaultUsers(){
+        if (userRepository.findByUsername("mai")==null){
+            User user = new User("mai","{noop}mai");
+            Authority authority = new Authority(user,"USER");
+            user.setAuthorities(Set.of(authority));
+            userRepository.save(user);
+        }
+        if(userRepository.findByUsername("admin")==null){
+            User user = new User("admin","{noop}admin");
+            Authority authorityAdmin = new Authority(user,"ADMIN");
+            Authority authorityUser = new Authority(user,"USER");
+            user.setAuthorities(Set.of(authorityAdmin, authorityUser));
+            userRepository.save(user);
+        }
+    }
+
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("mai")
-                .password("{noop}mai")
-                .authorities("read")
-                .roles("USER")
-                .build();
-
-        return new InMemoryUserDetailsManager(user);
+        return username -> {
+            User user = userRepository.findByUsername(username);
+            if(user==null){
+                throw new UsernameNotFoundException("User "+username+" not found");
+            }
+            return new org.springframework.security.core.userdetails.User(
+                    user.getUsername(),
+                    user.getPassword(),
+                    user.getAuthorities().stream()
+                            .map(authority -> new SimpleGrantedAuthority(authority.getAuthority()))
+                            .collect(Collectors.toList())
+            );
+        };
     }
+
 
     @Bean
     public JWKSource<SecurityContext> jwkSource() {

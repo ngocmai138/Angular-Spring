@@ -1,8 +1,14 @@
 package com.example.restful_web_service.todo;
 
+import jakarta.annotation.security.RolesAllowed;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -15,18 +21,26 @@ import java.util.List;
 public class TodoJpaController {
     @Autowired
     TodoJpaRepository todoJpaRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @GetMapping("/user/{username}/todos")
     public List<Todo> GetAllTodos(@PathVariable String username) {
-        return todoJpaRepository.findByUsername(username);
+        User user = userRepository.findByUsername(username);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("user: "+authentication.getName());
+        System.out.println("role: "+authentication.getAuthorities());
+        return todoJpaRepository.findByUserOrderByModifiedDateDesc(user);
     }
 
     @GetMapping("/user/{username}/todos/{id}")
+    @PostAuthorize("returnObject.username==authentication.name")
     public Todo getTodoById(@PathVariable long id, @PathVariable String username) {
-        return todoJpaRepository.findById(id).get();
+        return todoJpaRepository.findById(id).orElse(null);
     }
 
     @DeleteMapping("/user/{username}/todos/{id}")
+    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER') and #username == authentication.name")
     public ResponseEntity<Void> deleteById(@PathVariable String username, @PathVariable long id) {
         todoJpaRepository.deleteById(id);
         return ResponseEntity.noContent().build();
@@ -43,7 +57,8 @@ public class TodoJpaController {
     @PostMapping("/user/{username}/todos")
     public ResponseEntity<Void> saveTodo(@PathVariable String username,
                                          @RequestBody Todo todo) {
-        todo.setUsername(username);
+        User user = userRepository.findByUsername(username);
+        todo.setUser(user);
         Todo todoCreated = todoJpaRepository.save(todo);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
                 .path("/{id}").buildAndExpand(todoCreated.getId()).toUri();
