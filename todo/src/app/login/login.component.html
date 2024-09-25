@@ -1,10 +1,12 @@
 <h1>Login</h1>
-<div class="alert alert-warning" *ngIf='invalidLogin'>{{errorMessage}}</div>
-<div>
+<div class="container w-25">
+<div class="alert alert-warning row" *ngIf='invalidLogin'>{{errorMessage}}</div>
+<div class="row mb-3">
   Username: <input type="text" name="username" [(ngModel)]="username" >
   Password: <input type="password" name="password" [(ngModel)]="password">
-  <button (click)="handleJwtAuthLogin()" class="btn btn-success">Login</button>
+  <button (click)="handleJwtAuthLogin()" class="btn btn-success mt-3">Login</button>
 </div>
-<div>
-  <button class="btn btn-success" (click)="loginWithGoogle()">Login with Google</button>
+<div class="row">
+  <button class="btn google" (click)="loginWithGoogle()"><span class="fa fa-google"></span><small class="pl-3 pr-1"> Login up with Google  </small></button>
+</div>
 </div>

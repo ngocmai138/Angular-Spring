@@ -73,7 +73,7 @@ public class JwtSecurityConfig {
                         .authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.
-                        sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
+                        sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .oauth2ResourceServer(
                         (oauth2) -> oauth2.jwt(withDefaults()))
                 .oauth2Login(Customizer.withDefaults())

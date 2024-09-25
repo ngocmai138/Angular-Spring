@@ -1,28 +1,39 @@
 import {Component, OnInit} from '@angular/core';
-import {Todo} from "../todos/todos.component";
+import {Todo, User} from "../todos/todos.component";
 import {ActivatedRoute, Router} from "@angular/router";
 import {TodoDataService} from "../service/data/todo-data.service";
-import {FormsModule} from "@angular/forms";
+import {FormBuilder, FormControl, FormGroup, ReactiveFormsModule, Validators} from "@angular/forms";
 import {DatePipe, NgIf} from "@angular/common";
-import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
+import {JwtAuthenticationService} from "../service/http/jwt-authentication.service";
 
 @Component({
   selector: 'app-todo',
   standalone: true,
+  providers:[DatePipe],
   imports: [
-    FormsModule,
     DatePipe,
-    NgIf
+    NgIf,
+    ReactiveFormsModule
   ],
   templateUrl: './todo.component.html',
   styleUrl: './todo.component.css'
 })
 export class TodoComponent implements OnInit {
   id?: any
-  todo = new Todo(this.id, '', false, new Date())
+  todo = new Todo(this.id, '', false, new Date(),new Date())
   username?:any
+  todoForm!:FormGroup
+
+  // updateForm(){
+  //   this.todoForm.patchValue({
+  //     description: this.todo.description,
+  //     targetDate: new FormControl(this.datePipe.transform(this.todo.targetDate, 'yyyy-MM-dd'), [Validators.required])
+  //   })
+  // }
 
   saveTodo() {
+    this.todo.description = this.todoForm.get('description')?.value || '';
+    this.todo.targetDate = new Date(this.todoForm.get('targetDate')?.value || new Date());
     if(this.id!=-1){
       this.todoService.updateTodoService(this.username, this.id, this.todo).subscribe(
         {
@@ -55,15 +66,23 @@ export class TodoComponent implements OnInit {
   constructor(private route: ActivatedRoute,
               private todoService: TodoDataService,
               private router: Router,
-              private jwtAuthenticationSeriveService:JwtAuthenticationSeriveService) {
+              private jwtAuthenticationService:JwtAuthenticationService) {
+    this.todoForm = new FormGroup({
+      description: new FormControl('', Validators.compose([Validators.required, Validators.minLength(5)])),
+      targetDate: new FormControl('',[Validators.required])
+    })
   }
 
   ngOnInit(): void {
-    this.username = this.jwtAuthenticationSeriveService.getAuthenticatedUser()?.toString();
+    this.username = this.jwtAuthenticationService.getAuthenticatedUser()?.toString();
     this.id = this.route.snapshot.params['id'];
     if (this.id != -1) {
       this.todoService.rechieveTodoService(this.username, this.id).subscribe(
-        data => this.todo = data
+        data => {this.todo = data;
+        this.todoForm.patchValue({
+          description:data.description,
+          targetDate:data.targetDate
+        })}
       );
     }
   }

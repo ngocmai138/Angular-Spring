@@ -2,7 +2,7 @@ import {Component, OnInit} from '@angular/core';
 import {RouterLink} from "@angular/router";
 import {NgIf} from "@angular/common";
 import {BasicAuthenticationService} from "../service/http/basic-authentication.service";
-import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
+import {JwtAuthenticationService} from "../service/http/jwt-authentication.service";
 
 @Component({
   selector: 'app-menu',
@@ -14,11 +14,10 @@ import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication
 export class MenuComponent implements OnInit{
   username?:any
   protected readonly NgIf = NgIf;
-  constructor(public basicAuthenticationService:BasicAuthenticationService,
-              public jwtAuthenticationSeriveService:JwtAuthenticationSeriveService) {
+  constructor(public jwtAuthenticationService:JwtAuthenticationService) {
   }
 
   ngOnInit(): void {
-    this.username = this.jwtAuthenticationSeriveService.getAuthenticatedUser()?.toString()
+    this.username = this.jwtAuthenticationService.getAuthenticatedUser()?.toString()
   }
 }

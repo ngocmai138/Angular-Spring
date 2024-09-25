@@ -1,5 +1,6 @@
 package com.example.restful_web_service.todo;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -23,10 +24,12 @@ public class User {
     private boolean enabled = true;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    @JsonIgnore
     private List<Todo> todos;
 
     @Column(nullable = false)
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @JsonIgnore
     private Set<Authority> authorities = new HashSet<>();
 
     public User() {

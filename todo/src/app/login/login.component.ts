@@ -4,7 +4,7 @@ import {NgIf} from '@angular/common'
 import {Router} from "@angular/router";
 import {HardcodeAuthenticationService} from "../service/http/hardcode-authentication.service";
 import {BasicAuthenticationService} from "../service/http/basic-authentication.service";
-import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
+import {JwtAuthenticationService} from "../service/http/jwt-authentication.service";
 import {API_URL} from "../app.constants";
 
 @Component({
@@ -22,7 +22,7 @@ export class LoginComponent {
   constructor(private router:Router,
               private hardcodeAuthenticationService:HardcodeAuthenticationService,
               private basicAuthenticateService:BasicAuthenticationService,
-              private jwtAuthenticationSeriveService:JwtAuthenticationSeriveService) {
+              private jwtAuthenticationSeriveService:JwtAuthenticationService) {
   }
   handleClick(){
     if(this.hardcodeAuthenticationService.authenticate(this.username, this.password)){

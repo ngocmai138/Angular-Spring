@@ -7,7 +7,7 @@ import {AUTHENTICATED_USER, AuthenticationBean, TOKEN} from "./basic-authenticat
 @Injectable({
   providedIn: 'root'
 })
-export class JwtAuthenticationSeriveService {
+export class JwtAuthenticationService {
   constructor(private http: HttpClient) {
   }
 

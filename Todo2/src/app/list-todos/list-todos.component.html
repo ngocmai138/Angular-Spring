@@ -27,3 +27,11 @@
     </tr>
   </tbody>
 </table>
+<mat-paginator
+  [pageSizeOptions]="[3,5,10]"
+  [pageSize]="pageSize"
+  [pageIndex]="pageNumber"
+  showFirstLastButtons
+  aria-label="Select page of periodic elements"
+  [length]="totalElements"
+  (page)="handleEvent($event)"></mat-paginator>

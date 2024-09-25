@@ -18,7 +18,7 @@ export class BasicAuthenticationService{
     let headers = new HttpHeaders({
       Authorization:headerString
     })
-    return this.http.get<AuthenticationBean>(`http://localhost:8080/basic-auth`,{headers})
+    return this.http.post<AuthenticationBean>(`http://localhost:8080/basic-auth`,{},{headers})
       .pipe(
         map(
           data => {

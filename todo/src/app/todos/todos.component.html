@@ -1,6 +1,7 @@
 <h1>My todo list</h1>
 <div class="alert alert-success" *ngIf="messageSuccess">{{messageSuccess}}</div>
 <div class="alert alert-danger" *ngIf="messageFail">{{messageFail}}</div>
+<button class="btn btn-success"  (click)="addTodo()">Add new</button>
 <table class="table">
   <thead>
     <tr>
@@ -26,4 +27,12 @@
     </tr>
   </tbody>
 </table>
-<button class="btn btn-success"  (click)="addTodo()">Add new</button>
+
+<mat-paginator [pageSizeOptions]="[3, 5, 10, 20]"
+               [pageSize]="pageSize"
+               [pageIndex]="pageNumber"
+               [length]="pageLength"
+               showFirstLastButtons
+               aria-label="Select page of periodic elements"
+               (page)="handlePageEvent($event)">
+</mat-paginator>

@@ -1,0 +1,14 @@
+.fa-google {
+  background-color: #fff;
+  color: #df4b37;
+  padding: 10px 12px;
+  font-size: 10px;
+}
+.google {
+  background-color: #df4b37;
+  color: #fff;
+  padding: 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 18px;
+}

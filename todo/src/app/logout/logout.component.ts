@@ -1,6 +1,6 @@
 import {Component, OnInit} from '@angular/core';
 import {HardcodeAuthenticationService} from "../service/http/hardcode-authentication.service";
-import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
+import {JwtAuthenticationService} from "../service/http/jwt-authentication.service";
 
 @Component({
   selector: 'app-logout',
@@ -10,7 +10,7 @@ import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication
   styleUrl: './logout.component.css'
 })
 export class LogoutComponent implements OnInit{
-  constructor(public jwtAuthenticationSeriveService: JwtAuthenticationSeriveService) {
+  constructor(public jwtAuthenticationSeriveService: JwtAuthenticationService) {
   }
 
   ngOnInit(): void {

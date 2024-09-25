@@ -1,6 +1,10 @@
 package com.example.restful_web_service.todo;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -10,35 +14,35 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.util.*;
 import java.net.URI;
 
-//@RestController
+@RestController
 @CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/jpa")
-public class TodoJpaController {
-//    @Autowired
+public class TodoJpaPageAndSortController {
+    @Autowired
     TodoJpaRepository todoJpaRepository;
-//    @Autowired
+    @Autowired
     private UserRepository userRepository;
 
     @GetMapping("/user/{username}/todos")
-    public List<Todo> GetAllTodos(@PathVariable String username) {
+    public ResponseEntity<Page<Todo>>  GetAllTodos(@PathVariable String username,
+                                  @RequestParam(defaultValue = "0") int pageNumber,
+                                  @RequestParam(defaultValue = "3") int pageSize) {
         User user = userRepository.findByUsername(username);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("user: "+authentication.getName());
-        System.out.println("role: "+authentication.getAuthorities());
-        return todoJpaRepository.findByUserOrderByModifiedDateDesc(user);
+        Pageable pageElements = PageRequest.of(pageNumber, pageSize, Sort.by( "modifiedDate"));
+        return ResponseEntity.ok(todoJpaRepository.findByUser(user,pageElements));
     }
 
     @GetMapping("/user/{username}/todos/{id}")
-    @PostAuthorize("returnObject.username==authentication.name")
+    @PostAuthorize("returnObject.user.username==authentication.name")
     public Todo getTodoById(@PathVariable long id, @PathVariable String username) {
         return todoJpaRepository.findById(id).orElse(null);
     }
 
     @DeleteMapping("/user/{username}/todos/{id}")
-    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER') and #username == authentication.name")
+//    @PreAuthorize("hasAnyAuthority('ROLE_ADMIN','ROLE_USER') and #username == authentication.name")
     public ResponseEntity<Void> deleteById(@PathVariable String username, @PathVariable long id) {
         todoJpaRepository.deleteById(id);
         return ResponseEntity.noContent().build();

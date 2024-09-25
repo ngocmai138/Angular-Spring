@@ -2,7 +2,7 @@ package com.example.restful_web_service.todo;
 
 import jakarta.persistence.*;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 @Entity
 public class Todo {
     @Id
@@ -13,13 +13,13 @@ public class Todo {
     private User user;
     private String description;
     private boolean done;
-    private Date targetDate;
-    private Date modifiedDate;
+    private LocalDateTime targetDate;
+    private LocalDateTime modifiedDate;
 
     public Todo() {
     }
 
-    public Todo(long id, String description, boolean done, Date targetDate) {
+    public Todo(long id, String description, boolean done, LocalDateTime targetDate) {
         this.id = id;
         this.description = description;
         this.done = done;
@@ -40,12 +40,12 @@ public class Todo {
 
     @PreUpdate
     protected void onUpdate() {
-        modifiedDate = new Date();
+        modifiedDate = LocalDateTime.now();
     }
 
     @PrePersist
     protected void onPrePersist() {
-        modifiedDate = new Date();
+        modifiedDate = LocalDateTime.now();
     }
 
     public long getId() {
@@ -80,19 +80,19 @@ public class Todo {
         this.done = done;
     }
 
-    public Date getTargetDate() {
+    public LocalDateTime getTargetDate() {
         return targetDate;
     }
 
-    public void setTargetDate(Date targetDate) {
+    public void setTargetDate(LocalDateTime targetDate) {
         this.targetDate = targetDate;
     }
 
-    public Date getModifiedDate() {
+    public LocalDateTime getModifiedDate() {
         return modifiedDate;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
+    public void setModifiedDate(LocalDateTime modifiedDate) {
         this.modifiedDate = modifiedDate;
     }
 }

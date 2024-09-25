@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {JwtAuthenticationSeriveService} from "../service/http/jwt-authentication-serive.service";
+import {JwtAuthenticationService} from "../service/http/jwt-authentication.service";
 import {Router} from "@angular/router";
 
 @Component({
@@ -10,7 +10,7 @@ import {Router} from "@angular/router";
   styleUrl: './login-success.component.css'
 })
 export class LoginSuccessComponent implements OnInit{
-  constructor(private jwtAuthenticationSeriveService:JwtAuthenticationSeriveService,
+  constructor(private jwtAuthenticationSeriveService:JwtAuthenticationService,
               private router:Router) {
   }
   ngOnInit(): void {
